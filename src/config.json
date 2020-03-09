@@ -1,0 +1,62 @@
+{
+  "development": {
+    "max_upload_size": 5242880,
+    "jwt": {
+      "secret": "super_ultra_fucking_secret_token"
+    },
+    "database": {
+      "sin": {
+        "host": "192.168.10.68",
+        "dialect": "mssql",
+        "database": "sinutricash",
+        "username": "nutricash",
+        "password": "nutridev",
+        "dialectOptions": {
+          "options": {
+            "enableArithAbort": true
+          }
+        },
+        "pool": {
+          "max": 5,
+          "min": 0,
+          "acquire": 30000,
+          "idle": 10000
+        },
+        "logging": false
+      },
+      "gis": {
+        "host": "192.168.10.68",
+        "dialect": "mssql",
+        "database": "novo_sin",
+        "username": "usr_sindev",
+        "password": "s!ndev",
+        "dialectOptions": {
+          "options": {
+            "enableArithAbort": true
+          }
+        },
+        "pool": {
+          "max": 5,
+          "min": 0,
+          "acquire": 30000,
+          "idle": 10000
+        },
+        "logging": false
+      }
+    },
+    "ftp": {
+      "sin2": {
+        "host": "192.168.50.26",
+        "port": 990,
+        "user": "recolha",
+        "password": "R3c01h4!@#"
+      },
+      "sin": {
+        "host": "192.168.10.224",
+        "port": 21,
+        "user": "mxftp",
+        "password": "mxftp"
+      }
+    }
+  }
+}
