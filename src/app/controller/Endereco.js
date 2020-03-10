@@ -1,6 +1,7 @@
 import EnderecoShema from '../schemas/EnderecoSchema';
 import EnderecoPessoa from '../model/Pessoa_Endereco';
 import api from 'axios';
+import { loadLists } from '../../dados';
 
 class EnderecoController {
   async buscarEnderecoApi(endereco) {
@@ -13,74 +14,49 @@ class EnderecoController {
       longtude: lng,
     };
   }
+  async converterJson(req, res) {
+    let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
+    res.json(enderecoPessoaInstance);
+  }
 
-  async buscarEnderecoCredenciado(req, res) {
-    const enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
-
+  buscarEnderecoCredenciado(req, res) {
+      //let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
+    const enderecoPessoaInstance = loadLists();
     enderecoPessoaInstance.map(async endereco => {
       let logradouro = '';
+      logradouro += endereco.numero + ' ';
+      logradouro += endereco.tipo_logradouro + ' ';
+      logradouro += endereco.logradouro + ' ';
+      logradouro += endereco.complemento + ' ';
+      logradouro += endereco.bairro + ' ';
+      logradouro += endereco.cidade + ' ';
+      logradouro += endereco.estado + ' ';
 
-      logradouro +=
-        endereco.numero
-          .replace(/ /g, '+')
-          .replace('.', '+')
-          .replace(',', '+') + '+';
-      logradouro +=
-        endereco.tipo_logradouro
-          .replace(/ /g, '+')
-          .replace('.', '+')
-          .replace(',', '+') + '+';
-      logradouro +=
-        endereco.logradouro
-          .replace(/ /g, '+')
-          .replace('.', '+')
-          .replace(',', '+') + '+';
-      logradouro +=
-        endereco.complemento
-          .replace(/ /g, '+')
-          .replace('.', '+')
-          .replace(',', '+') + '+';
-      logradouro +=
-        endereco.bairro
-          .replace(/ /g, '+')
-          .replace('.', '+')
-          .replace(',', '+') + ',+';
-      logradouro +=
-        endereco.cidade
-          .replace(/ /g, '+')
-          .replace('.', '+')
-          .replace(',', '+') + ',+';
-      logradouro +=
-        endereco.estado
-          .replace(/ /g, '+')
-          .replace('.', '+')
-          .replace(',', '+') + '';
-
-      let google;
       try {
-        console.log("CADE ESSA DISGRACA")
-        console.log(`'${logradouro}'`)
-        google = await api.post(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${logradouro}&key=AIzaSyARzmym-3SfKGGU0fPGFQ7SwIimkVDQF6U`
-        );
-        console.log(google);
+        await api
+          .post(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${logradouro}&key=AIzaSyARzmym-3SfKGGU0fPGFQ7SwIimkVDQF6U`
+          )
+          .then(function(response) {
+            let { lat, lng } = response.data.results[0].geometry.location;
+            EnderecoShema.create({
+              pessoa_id: endereco.rbase,
+              lat: lat,
+              long: lng,
+            });
+            res.json(enderecoPessoaInstance);
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
       } catch (ex) {
-        console.log(ex);
+        res.json(enderecoPessoaInstance);
+        console.log('nao fopi');
       }
-
-      //buscarEnderecoApi(logradouro)
-      let { lat, lng } = google.data.results[0].geometry.location;
-      EnderecoShema.create({
-        pessoa_id: endereco.pessoa_id,
-        lat: latitude,
-        long: longtude,
-      });
     });
-
-    res.json(enderecoPessoaInstance);
-    // } catch (ex) {
-    //   return res.status(500).json({ msg: ex.message });
-    // }
   }
 }
+
+
+
 export default new EnderecoController();
