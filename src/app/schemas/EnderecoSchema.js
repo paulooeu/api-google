@@ -2,31 +2,31 @@ import mongoose from 'mongoose';
 
 const EnderecoSchema = new mongoose.Schema(
   {
-    pessoa_id: {
+    rbase: {
       type: String,
       required: true,
     },
-    lat: {
-      type: String
+    nome: {
+      type: String,
     },
-    long: {
-      type: String
+    status: {
+      type: String,
     },
-    cep:{
-      type: String
+    latitude_antiga: {
+      type: String,
     },
-    endereco:{
-      type: String
+    longitude_antiga: {
+      type: String,
     },
-    bairro:{
-      type: String
+    latitude: {
+      type: String,
     },
-    cidade:{
-      type: String
+    longitude: {
+      type: String,
     },
-    estado:{
-      type: String
-    }
+    correcao: {
+      type: String,
+    },
   },
   {
     timestamps: true,

@@ -20,7 +20,7 @@ class EnderecoController {
   }
 
   buscarEnderecoCredenciado(req, res) {
-      //let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
+    //let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
     const enderecoPessoaInstance = loadLists();
     enderecoPessoaInstance.map(async endereco => {
       let logradouro = '';
@@ -39,24 +39,34 @@ class EnderecoController {
           )
           .then(function(response) {
             let { lat, lng } = response.data.results[0].geometry.location;
+            let isCorrigido = true;
+            if (lat == endereco.latitude && lng == endereco.longitude) {
+              isCorrigido = false;
+            }
             EnderecoShema.create({
-              pessoa_id: endereco.rbase,
-              lat: lat,
-              long: lng,
+              rbase: endereco.rbase,
+              latitude: lat,
+              longitude: lng,
+              latitude_antiga: endereco.latitude,
+              longitude_antiga: endereco.longitude,
+              status: endereco.status,
+              nome: endereco.nome,
+              correcao: isCorrigido,
             });
-            res.json(enderecoPessoaInstance);
           })
           .catch(function(error) {
             console.log(error);
           });
       } catch (ex) {
-        res.json(enderecoPessoaInstance);
-        console.log('nao fopi');
+        res.json(ex);
       }
     });
+    res.json(enderecoPessoaInstance);
+  }
+  async buscarEndereco(req, res) {
+    const enderecos = await EnderecoShema.find();
+    return res.json(enderecos);
   }
 }
-
-
 
 export default new EnderecoController();
