@@ -5,41 +5,50 @@ class PessoaEndereco {
     constructor() {
         this.query = `
         SELECT DISTINCT TOP 100
-          ep.id,
-          ISNULL(ep.numero,'')  numero,
-        ISNULL(ep.estado,'')  estado,
-        ISNULL(ep.cidade,'')  cidade,
-        ISNULL(ep.bairro,'')  bairro,
-        ISNULL(ep.complemento,'') complemento,
-        ISNULL(ep.cep,'') cep,
-        ISNULL(ep.id,'') rbase,
-        c.nome_cliente nome,
-        ISNULL(ep.latitude,'') latitude,
-        ISNULL(ep.longitude,'') longitude,
-          'E' status
-          FROM endereco_pessoa ep
-          INNER JOIN pessoa p ON ep.pessoa_id = p.id
-          INNER JOIN cliente c ON p.id = c.pessoa_id
-          WHERE ep.latitude<>0 OR ep.longitude<>0
-UNION
-
-     SELECT DISTINCT TOP 100
-          ep.id,
-        ISNULL(ep.numero,'')  numero,
-      ISNULL(ep.estado,'')  estado,
-      ISNULL(ep.cidade,'')  cidade,
-      ISNULL(ep.bairro,'')  bairro,
-      ISNULL(ep.complemento,'') complemento,
-      ISNULL(ep.cep,'') cep,
-      ISNULL(ep.id,'') rbase,
-      c.nome_cliente nome,
-      ISNULL(ep.latitude,'') latitude,
-      ISNULL(ep.longitude,'') longitude,
-          'N' status
+        ep.id,
+        ISNULL(ep.tipo_logradouro,' ')  tipo_logradouro,
+        ISNULL(ep.logradouro,' ')  logradouro,
+        ISNULL(ep.numero,' ')  numero,
+        ISNULL(ep.estado,' ')  estado,
+        ISNULL(ep.cidade,' ')  cidade,
+        ISNULL(ep.bairro,' ')  bairro,
+        ISNULL(ep.complemento,' ') complemento,
+        ISNULL(ep.cep,' ') cep,
+        ISNULL(ep.id,' ') rbase,
+        ISNULL(c1.nome_credenciado,' ')  nome,
+        ISNULL(ep.latitude,' ') latitude,
+        ISNULL(ep.longitude,' ') longitude,
+        'E' status
         FROM endereco_pessoa ep
         INNER JOIN pessoa p ON ep.pessoa_id = p.id
-        INNER JOIN cliente c ON p.id = c.pessoa_id
-        WHERE ep.latitude=0 OR ep.longitude=0
+      INNER JOIN credenciado c1 ON p.id = c1.pessoa_id
+
+        WHERE (ep.latitude<>0 OR ep.longitude<>0)  AND ep.cidade LIKE '%Salvador%'
+
+UNION
+
+   SELECT DISTINCT TOP 100
+        ep.id,
+    ISNULL(ep.tipo_logradouro,' ')  tipo_logradouro,
+    ISNULL(ep.logradouro ,' ')  logradouro,
+    ISNULL(ep.numero,' ')  numero,
+    ISNULL(ep.estado,' ')  estado,
+    ISNULL(ep.cidade,' ')  cidade,
+    ISNULL(ep.bairro,' ')  bairro,
+    ISNULL(ep.complemento,' ') complemento,
+    ISNULL(ep.cep,' ') cep,
+    ISNULL(ep.id,' ') rbase,
+    IsNULL(c1.nome_credenciado,' ')  nome,
+    ISNULL(ep.latitude,' ') latitude,
+    ISNULL(ep.longitude,' ') longitude,
+        'N' status
+      FROM endereco_pessoa ep
+      INNER JOIN pessoa p ON ep.pessoa_id = p.id
+       INNER JOIN credenciado c1 ON p.id = c1.pessoa_id
+      WHERE (ep.latitude=0 OR ep.longitude=0) AND ep.cidade LIKE '%Salvador%'
+
+      ORDER BY  ep.id
+
 
                      `
     }

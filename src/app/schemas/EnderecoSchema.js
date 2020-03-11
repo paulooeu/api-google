@@ -27,6 +27,9 @@ const EnderecoSchema = new mongoose.Schema(
     correcao: {
       type: String,
     },
+    endereco_antigo:{
+      type: String,
+    }
   },
   {
     timestamps: true,

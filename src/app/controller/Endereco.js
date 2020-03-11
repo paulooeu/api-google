@@ -19,9 +19,9 @@ class EnderecoController {
     res.json(enderecoPessoaInstance);
   }
 
-  buscarEnderecoCredenciado(req, res) {
-    //let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
-    const enderecoPessoaInstance = loadLists();
+ async buscarEnderecoCredenciado(req, res) {
+    let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
+   // const enderecoPessoaInstance = loadLists();
     enderecoPessoaInstance.map(async endereco => {
       let logradouro = '';
       logradouro += endereco.numero + ' ';
@@ -38,21 +38,28 @@ class EnderecoController {
             `https://maps.googleapis.com/maps/api/geocode/json?address=${logradouro}&key=AIzaSyARzmym-3SfKGGU0fPGFQ7SwIimkVDQF6U`
           )
           .then(function(response) {
-            let { lat, lng } = response.data.results[0].geometry.location;
-            let isCorrigido = true;
-            if (lat == endereco.latitude && lng == endereco.longitude) {
-              isCorrigido = false;
+            if(response.data.results[0]){
+              let { lat, lng } = response.data.results[0].geometry.location;
+              let isCorrigido = true;
+              if (lat == endereco.latitude && lng == endereco.longitude) {
+                isCorrigido = false;
+              }
+              EnderecoShema.create({
+                rbase: endereco.rbase,
+
+                latitude: lat,
+                longitude: lng,
+                latitude_antiga: endereco.latitude,
+                longitude_antiga: endereco.longitude,
+                endereco_antigo:logradouro,
+                status: endereco.status,
+                nome: endereco.nome,
+                correcao: isCorrigido,
+              });
             }
-            EnderecoShema.create({
-              rbase: endereco.rbase,
-              latitude: lat,
-              longitude: lng,
-              latitude_antiga: endereco.latitude,
-              longitude_antiga: endereco.longitude,
-              status: endereco.status,
-              nome: endereco.nome,
-              correcao: isCorrigido,
-            });
+
+
+
           })
           .catch(function(error) {
             console.log(error);
