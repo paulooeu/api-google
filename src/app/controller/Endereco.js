@@ -20,17 +20,18 @@ class EnderecoController {
   }
 
  async buscarEnderecoCredenciado(req, res) {
-    let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
-   // const enderecoPessoaInstance = loadLists();
+    //let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
+    let enderecoPessoaInstance = loadLists();
     enderecoPessoaInstance.map(async endereco => {
       let logradouro = '';
-      logradouro += endereco.numero + ' ';
       logradouro += endereco.tipo_logradouro + ' ';
       logradouro += endereco.logradouro + ' ';
       logradouro += endereco.complemento + ' ';
+      logradouro += endereco.numero + ' ';
       logradouro += endereco.bairro + ' ';
       logradouro += endereco.cidade + ' ';
-      logradouro += endereco.estado + ' ';
+      logradouro += endereco.estado + ' ,';
+      logradouro += endereco.nome + ' ';
 
       try {
         await api
