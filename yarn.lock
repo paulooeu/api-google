@@ -2330,6 +2330,11 @@ registry-url@^3.0.3:
   dependencies:
     rc "^1.0.1"
 
+remover-acentos@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/remover-acentos/-/remover-acentos-0.0.6.tgz#4aa0a8a399eda303a4f51719060cf729d5c9809d"
+  integrity sha1-SqCoo5ntowOk9RcZBgz3KdXJgJ0=
+
 "request@>= 2.52.0":
   version "2.88.2"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.2.tgz#d73c918731cb5a87da047e207234146f664d12b3"

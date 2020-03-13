@@ -1,6 +1,7 @@
 import EnderecoShema from '../schemas/EnderecoSchema';
 import EnderecoPessoa from '../model/Pessoa_Endereco';
 import api from 'axios';
+import removerAcentos from "remover-acentos";
 import { loadLists } from '../../dados';
 
 class EnderecoController {
@@ -19,10 +20,18 @@ class EnderecoController {
     res.json(enderecoPessoaInstance);
   }
 
+
+
   async buscarEnderecoCredenciado(req, res) {
-    //let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
-    let enderecoPessoaInstance = loadLists();
+    let enderecoPessoaInstance = await new EnderecoPessoa().findAllByFilter();
+    //let enderecoPessoaInstance = loadLists();
+    let contador = 0;
+    var palavraSemAcento = "";
+    var caracterComAcento = "áàãâäéèêëíìîïóòõôöúùûüçÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÖÔÚÙÛÜÇ`´";
+    var caracterSemAcento = "aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC  ";
+
     enderecoPessoaInstance.map(async endereco => {
+      palavraSemAcento=""
       let logradouro = '';
       logradouro += endereco.tipo_logradouro + ' ';
       logradouro += endereco.logradouro + ' ';
@@ -32,6 +41,16 @@ class EnderecoController {
       logradouro += endereco.cidade + ' ';
       logradouro += endereco.estado + ' ,';
       logradouro += endereco.nome + ' ';
+      for (var i = 0; i < logradouro.length; i++)    {
+        var char = logradouro.substr(i, 1);
+        var indexAcento = caracterComAcento.indexOf(char);
+        if (indexAcento != -1) {
+        palavraSemAcento += caracterSemAcento.substr(indexAcento, 1);
+        } else {
+        palavraSemAcento += char;
+        }
+      }
+      logradouro =palavraSemAcento
 
       try {
         await api
@@ -45,17 +64,24 @@ class EnderecoController {
               if (lat == endereco.latitude && lng == endereco.longitude) {
                 isCorrigido = false;
               }
-              EnderecoShema.create({
-                rbase: endereco.rbase,
-                latitude: lat,
-                longitude: lng,
-                latitude_antiga: endereco.latitude,
-                longitude_antiga: endereco.longitude,
-                endereco_antigo: logradouro,
-                status: endereco.status,
-                nome: endereco.nome,
-                correcao: isCorrigido,
-              });
+
+              const enderecoExistente = EnderecoShema.findOne({
+                where:{rbase:endereco.rbase}
+              })
+                  if(!enderecoExistente){
+                    EnderecoShema.create({
+                      rbase: endereco.rbase,
+                      latitude: lat,
+                      longitude: lng,
+                      latitude_antiga: endereco.latitude,
+                      longitude_antiga: endereco.longitude,
+                      endereco_antigo: logradouro,
+                      status: endereco.status,
+                      nome: endereco.nome,
+                      correcao: isCorrigido,
+                    });
+                  }
+
             }
           })
           .catch(function(error) {
@@ -64,8 +90,10 @@ class EnderecoController {
       } catch (ex) {
         res.json(ex);
       }
+      contador++
     });
-    res.json(enderecoPessoaInstance);
+
+    res.json(contador);
   }
   async buscarEndereco(req, res) {
     const enderecos = await EnderecoShema.find();

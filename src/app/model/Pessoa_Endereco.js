@@ -4,7 +4,7 @@ const SIN = require('../tools/database_gis')
 class PessoaEndereco {
     constructor() {
         this.query = `
-        SELECT DISTINCT TOP 100
+        SELECT
         ep.id,
         ISNULL(ep.tipo_logradouro,' ')  tipo_logradouro,
         ISNULL(ep.logradouro,' ')  logradouro,
@@ -23,11 +23,11 @@ class PessoaEndereco {
         INNER JOIN pessoa p ON ep.pessoa_id = p.id
       INNER JOIN credenciado c1 ON p.id = c1.pessoa_id
 
-        WHERE (ep.latitude<>0 OR ep.longitude<>0)  AND ep.cidade LIKE '%Salvador%'
+        WHERE (ep.latitude<>0 OR ep.longitude<>0)   AND c1.status_id =1
 
 UNION
 
-   SELECT DISTINCT TOP 100
+   SELECT
         ep.id,
     ISNULL(ep.tipo_logradouro,' ')  tipo_logradouro,
     ISNULL(ep.logradouro ,' ')  logradouro,
@@ -45,9 +45,9 @@ UNION
       FROM endereco_pessoa ep
       INNER JOIN pessoa p ON ep.pessoa_id = p.id
        INNER JOIN credenciado c1 ON p.id = c1.pessoa_id
-      WHERE (ep.latitude=0 OR ep.longitude=0) AND ep.cidade LIKE '%Salvador%'
 
-      ORDER BY  ep.id
+      WHERE (ep.latitude=0 OR ep.longitude=0)  AND c1.status_id =1
+
 
 
                      `
